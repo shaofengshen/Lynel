@@ -1,7 +1,9 @@
+mod vehicle;
 use std::thread;
 use std::time::Duration;
 use rppal::i2c::I2c;
-mod vehicle;    // 引入 vehicle 模块
+use vehicle::Vehicle;
+
 
 // Define the color command
 const COLOR_RED: u8 = 0x01;
@@ -13,7 +15,8 @@ const COLOR_CYAN: u8 = 0x06;
 const COLOR_WHITE: u8 = 0x07;
 
 fn main() {
-    let vehicle = Vehicle::new();    // Set up the vehicle
+    let i2c = I2c::new().unwrap();  // Create an I2C instance
+    let mut vehicle = Vehicle::new(i2c);    // Set up the vehicle
 
     let colors = [COLOR_RED, COLOR_GREEN, COLOR_BLUE, COLOR_YELLOW, COLOR_PURPLE, COLOR_CYAN, COLOR_WHITE]; // 颜色数组
 
