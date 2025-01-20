@@ -25,13 +25,13 @@ impl Vehicle {
         println!("Motor {} started forward, speed: {}", motor_id, MOTOR_SPEED);
     }
 
-    pub fn led_on(&mut self, color: u8) {
+    pub fn led_light_on(&mut self, color: u8) {
         let led_command = [LED_ADDRESS, 0x01, color];
         self.i2c.write(&led_command).unwrap();
         println!("LED on, color: {}", color);
     }
 
-    pub fn led_off(&mut self) {
+    pub fn led_light_off(&mut self) {
         let led_command = [LED_ADDRESS, 0x00, 0x00];
         self.i2c.write(&led_command).unwrap();
         println!("LED off");
