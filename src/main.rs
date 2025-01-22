@@ -1,9 +1,11 @@
 mod vehicle;
+mod vehicle_controller;
 use std::thread;
 use std::time::Duration;
 use std::sync::{Arc, Mutex};
 use rppal::i2c::I2c;
 use vehicle::Vehicle;
+use vehicle_controller::VehicleController;
 use ctrlc;
 
 
@@ -18,16 +20,14 @@ const COLOR_WHITE: u8 = 0x07;
 
 fn main() {
     let i2c = I2c::new().unwrap();  // Create an I2C instance
-    let vehicle = Arc::new(Mutex::new(Vehicle::new(i2c)));    // Set up the vehicle
+    let vehicle = Arc::new(Mutex::new(vehicle_controller::new(i2c)));    // Set up the vehicle
 
     // Set up Ctrl-C handler
     let vehicle_clone = Arc::clone(&vehicle);    // Clone the vehicle
     ctrlc::set_handler(move|| {
         println!("Ctrl-C pressed!");
         vehicle_clone.lock().unwrap().led_light_off();
-        for motor_id in 0..4 {
-            vehicle_clone.lock().unwrap().stop_motor(motor_id);
-        }
+        vehicle_clone.lock().unwrap().stop();
         std::process::exit(0);    // Exit the program
     }).expect("Error setting Ctrl-C handler");
 
