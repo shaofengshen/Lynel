@@ -25,6 +25,9 @@ fn main() {
     ctrlc::set_handler(move|| {
         println!("Ctrl-C pressed!");
         vehicle_clone.lock().unwrap().led_light_off();
+        for motor_id in 0..4 {
+            vehicle_clone.lock().unwrap().stop_motor(motor_id);
+        }
         std::process::exit(0);    // Exit the program
     }).expect("Error setting Ctrl-C handler");
 
@@ -34,6 +37,9 @@ fn main() {
         for &color in &colors {
             vehicle.lock().unwrap().led_light_on(color);
             thread::sleep(Duration::from_secs(1));
+        }
+        for motor_id in 0..4 {
+            vehicle.lock().unwrap().start_motor(motor_id);
         }
 
         vehicle.lock().unwrap().led_light_off();
