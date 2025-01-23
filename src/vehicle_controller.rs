@@ -1,9 +1,8 @@
-mod vehicle;
-
-use vehicle::Vehicle;
+use crate::vehicle::Vehicle;
+use rppal::i2c::I2c;
 
 pub struct VehicleController {
-    vehicle: Vehicle,
+    pub vehicle: Vehicle,
 }
 
 impl VehicleController {
