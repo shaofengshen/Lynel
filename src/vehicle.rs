@@ -7,6 +7,9 @@ const MOTOR_FORWARD: u8 = 0x00; // 电机正转
 const MOTOR_BACKWARD: u8 = 0x01; // 电机反转
 // TODO: 电机停止, 确认电机停止的命令
 const MOTOR_SPEED: u8 = 50; // 电机默认速度
+const ULTRASONIC_SENSOR_ADDRESS: u8 = 0x07; // 超声波传感器地址
+const ULTRASONIC_LOW_ADDRESS: u8 = 0x1A; // 超声波传感器低地址
+const ULTRASONIC_HIGH_ADDRESS: u8 = 0x1B; // 超声波传感器高地址
 
 pub struct Vehicle {
     i2c: I2c,
@@ -47,5 +50,27 @@ impl Vehicle {
         let led_command = [LED_ADDRESS, 0x00, 0x00];
         self.i2c.write(&led_command).unwrap();
         println!("LED off");
+    }
+    
+    pub fn enable_ultrasonic_sensor (&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        let command = [ULTRASONIC_SENSOR_ADDRESS, 0x01];
+        self.i2c.write(&command).unwrap();
+        Ok(())
+    }
+
+    pub fn disable_ultrasonic_sensor(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        let command = [ULTRASONIC_SENSOR_ADDRESS, 0x00];
+        self.i2c.write(&command).unwrap();
+        Ok(())
+    }
+
+    pub fn read_ultrasonic(&mut self) -> Result<u16, Box<dyn std::error::Error>> {
+        // 读取低位
+        let low_data = self.i2c.smbus_read_byte(ULTRASONIC_LOW_ADDRESS)?;
+        // 读取高位
+        let high_data = self.i2c.smbus_read_byte(ULTRASONIC_HIGH_ADDRESS)?;
+        // 组合成16位数据
+        let distance = (high_data as u16) << 8 | (low_data as u16);
+        Ok(distance)
     }
 }

@@ -29,4 +29,24 @@ impl VehicleController {
             self.vehicle.stop_motor(motor_id);
         }
     }
+
+    pub fn get_ultrasonic_distance(&mut self) -> Result<u16, Box<dyn std::error::Error>> {
+        // Enable ultrasonic sensor
+        self.vehicle.enable_ultrasonic_sensor();
+        // Read ultrasonic sensor
+        let distance = match self.vehicle.read_ultrasonic() {
+            Ok(d) => {
+                // Disable ultrasonic sensor
+                self.vehicle.disable_ultrasonic_sensor()?;
+                Ok(d)
+            }
+            Err(e) => {
+                // Disable ultrasonic sensor, even if reading failed
+                self.vehicle.disable_ultrasonic_sensor()?;
+                Err(e)
+            }
+        }?;
+
+        Ok(distance)
+    }
 }
