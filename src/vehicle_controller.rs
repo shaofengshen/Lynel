@@ -1,4 +1,6 @@
 use crate::vehicle::Vehicle;
+use std::time::Duration;
+use std::thread;
 use rppal::i2c::I2c;
 
 pub struct VehicleController {
@@ -33,15 +35,18 @@ impl VehicleController {
     pub fn get_ultrasonic_distance(&mut self) -> Result<u16, Box<dyn std::error::Error>> {
         // Enable ultrasonic sensor
         self.vehicle.enable_ultrasonic_sensor();
+        thread::sleep(Duration::from_secs(1));
         // Read ultrasonic sensor
         let distance = match self.vehicle.read_ultrasonic() {
             Ok(d) => {
                 // Disable ultrasonic sensor
+                thread::sleep(Duration::from_secs(1));
                 self.vehicle.disable_ultrasonic_sensor()?;
                 Ok(d)
             }
             Err(e) => {
                 // Disable ultrasonic sensor, even if reading failed
+                thread::sleep(Duration::from_secs(1));
                 self.vehicle.disable_ultrasonic_sensor()?;
                 Err(e)
             }

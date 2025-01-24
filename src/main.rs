@@ -45,7 +45,10 @@ fn main() {
             vehicle_controller.lock().unwrap().vehicle.led_light_on(color);
             thread::sleep(Duration::from_secs(1));
         }
-        vehicle_controller.lock().unwrap().forward();
+        match vehicle_controller.lock().unwrap().get_ultrasonic_distance() {
+            Ok(value) => println!("Distance: {} mm", value),
+            Err(e) => println!("Error reading distance: {}", e),
+        }
 
         vehicle_controller.lock().unwrap().vehicle.led_light_off();
         thread::sleep(Duration::from_secs(1));       
